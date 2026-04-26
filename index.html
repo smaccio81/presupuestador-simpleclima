@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Clima — Presupuestador Rotoplast</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;background:#f5f5f5;color:#1C2833;min-height:100vh}
+.app{max-width:780px;margin:0 auto;padding:1rem}
+.app-header{background:#1A5276;color:#fff;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.app-title{font-size:18px;font-weight:600}
+.app-sub{font-size:12px;opacity:.8;margin-top:2px}
+.tabs{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.tab{padding:6px 12px;font-size:12px;border:1px solid #D5D8DC;border-radius:8px;cursor:pointer;background:#fff;color:#555}
+.tab.active{background:#EBF5FB;color:#1A5276;font-weight:600;border-color:#1A5276}
+.tab.ptab{border-color:#185FA5;color:#185FA5}
+.tab.ptab.active{background:#E6F1FB;color:#0C447C;font-weight:600}
+.ibadge{display:inline-block;background:#FAEEDA;color:#633806;font-size:10px;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.st{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.05em;margin:1rem 0 .4rem;padding-bottom:4px;border-bottom:2px solid #1A5276}
+.card{background:#fff;border:1px solid #E5E8EC;border-radius:10px;padding:.85rem 1rem;margin-bottom:.65rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.divider{border:none;border-top:1px solid #E5E8EC;margin:.55rem 0}
+.row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.rl{color:#777}.rv{font-weight:500}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:7px;margin-bottom:.5rem}
+.mc{background:#F4F6F8;border-radius:8px;padding:.55rem .75rem}
+.ml{font-size:11px;color:#777;margin-bottom:2px}
+.mv{font-size:15px;font-weight:500}
+.badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:6px;font-weight:500}
+.bg{background:#EAF3DE;color:#27500A}.ba{background:#FAEEDA;color:#633806}.br{background:#FCEBEB;color:#791F1F}
+.hl{border-radius:8px;padding:.55rem .8rem;margin-top:.4rem}
+.hlg{background:#EAF3DE}.hla{background:#FAEEDA}.hlr{background:#FCEBEB}
+.hll{font-size:11px;font-weight:600}
+.lg{color:#3B6D11}.la{color:#854F0B}.lr{color:#A32D2D}
+.hlv{font-size:18px;font-weight:500}
+.vg{color:#27500A}.va{color:#633806}.vr{color:#791F1F}
+/* inputs */
+.ir{display:flex;align-items:center;gap:8px;margin-bottom:.55rem}
+.il{font-size:12px;color:#555;flex:1}
+.in{width:110px;padding:5px 8px;font-size:13px;border:1px solid #D5D8DC;border-radius:6px;background:#fff;color:#1C2833;text-align:right}
+.in:focus{outline:none;border-color:#1A5276}
+.iu{font-size:11px;color:#999;min-width:30px}
+.tc-row{display:flex;align-items:center;gap:8px;margin-bottom:.55rem;flex-wrap:wrap}
+.tc-lbl{font-size:12px;color:#555;flex:1;min-width:120px}
+.tc-inp{width:110px;padding:5px 8px;font-size:13px;border:1px solid #D5D8DC;border-radius:6px;background:#fff;color:#1C2833;text-align:right}
+.tc-inp:focus{outline:none;border-color:#1A5276}
+.bna-btn{padding:5px 11px;font-size:11px;border:1px solid #185FA5;border-radius:6px;cursor:pointer;background:#E6F1FB;color:#0C447C;white-space:nowrap;font-weight:500}
+.bna-btn:hover{background:#D6EAF8}
+.bna-status{font-size:11px}
+.bna-ok{color:#27500A}.bna-err{color:#A32D2D}.bna-loading{color:#185FA5}
+/* tablas */
+.mt{width:100%;border-collapse:collapse}
+.mt th{font-size:11px;font-weight:600;color:#777;text-align:left;padding:4px 4px;border-bottom:1px solid #E5E8EC;white-space:nowrap}
+.mt td{padding:4px 3px;border-bottom:1px solid #E5E8EC;vertical-align:middle}
+.mt tr:last-child td{border-bottom:none}
+.mt input[type=text],.mt input[type=number]{width:100%;padding:3px 5px;font-size:12px;border:1px solid #D5D8DC;border-radius:5px;background:#fff;color:#1C2833}
+.mt input[type=number]{width:78px}
+.mt select{font-size:11px;padding:3px 4px;border:1px solid #D5D8DC;border-radius:5px;background:#fff;color:#1C2833}
+.tagd{background:#EAF3DE;color:#27500A;font-size:10px;padding:1px 5px;border-radius:4px}
+.tage{background:#E6F1FB;color:#0C447C;font-size:10px;padding:1px 5px;border-radius:4px}
+.delbtn{font-size:12px;color:#A32D2D;cursor:pointer;background:none;border:none;padding:0 3px}
+.addbtn{padding:4px 11px;font-size:12px;border:1px solid #D5D8DC;border-radius:7px;cursor:pointer;background:transparent;color:#555;margin-top:.4rem}
+.addbtn:hover{background:#F4F6F8}
+.msel{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.6rem}
+.mpill{padding:4px 10px;font-size:11px;border:1px solid #D5D8DC;border-radius:7px;cursor:pointer;background:transparent;color:#555}
+.mpill.active{background:#EBF5FB;color:#1A5276;font-weight:600;border-color:#1A5276}
+.etbl{width:100%;border-collapse:collapse;font-size:12px}
+.etbl th{font-size:11px;font-weight:600;color:#777;padding:4px 7px;border-bottom:1px solid #E5E8EC;text-align:left}
+.etbl td{padding:5px 7px;border-bottom:1px solid #E5E8EC}
+.etbl tr:last-child td{border-bottom:none}
+.etbl .kr td{background:#F4F6F8;font-weight:500}
+.etbl-ed{width:100%;border-collapse:collapse;font-size:12px}
+.etbl-ed th{font-size:11px;font-weight:600;color:#777;padding:5px 8px;border-bottom:1px solid #E5E8EC;text-align:left}
+.etbl-ed td{padding:5px 6px;border-bottom:1px solid #E5E8EC;vertical-align:middle}
+.etbl-ed input[type=number]{width:60px;padding:4px 5px;font-size:12px;border:1px solid #D5D8DC;border-radius:5px;text-align:center;background:#fff}
+.etbl-ed input[type=text]{width:115px;padding:4px 5px;font-size:12px;border:1px solid #D5D8DC;border-radius:5px;background:#fff}
+.reset-btn{padding:3px 10px;font-size:11px;border:1px solid #D5D8DC;border-radius:6px;cursor:pointer;background:transparent;color:#555;float:right}
+.abox{background:#E6F1FB;border-radius:8px;padding:.6rem .85rem;margin-bottom:.6rem}
+.abox-t{font-size:12px;font-weight:600;color:#0C447C;margin-bottom:3px}
+.abox-s{font-size:11px;color:#185FA5;line-height:1.5}
+.tgl{display:flex;gap:0;border:1px solid #D5D8DC;border-radius:8px;overflow:hidden;width:fit-content;margin-bottom:.65rem}
+.tglb{padding:5px 13px;font-size:12px;border:none;cursor:pointer;background:transparent;color:#777}
+.tglb.on{background:#EBF5FB;color:#1A5276;font-weight:600}
+/* presupuesto */
+.ph{background:#1A5276;color:#fff;border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.75rem}
+.ph-n{font-size:16px;font-weight:600}
+.ph-s{font-size:11px;opacity:.8;margin-top:2px}
+.pitbl{width:100%;border-collapse:collapse;font-size:12px}
+.pitbl th{font-size:11px;font-weight:600;color:#777;padding:4px 6px;border-bottom:1px solid #E5E8EC;text-align:left}
+.pitbl td{padding:5px 6px;border-bottom:1px solid #E5E8EC;vertical-align:middle}
+.pitbl tr:last-child td{border-bottom:none}
+.pitbl input[type=number],.pitbl select{padding:3px 5px;font-size:12px;border:1px solid #D5D8DC;border-radius:5px;background:#fff;color:#1C2833}
+.pitbl input[type=number]{width:48px}
+.fld-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem;flex-wrap:wrap}
+.fld-lbl{font-size:12px;color:#555;min-width:130px}
+.fld-inp{padding:5px 8px;font-size:12px;border:1px solid #D5D8DC;border-radius:6px;background:#fff;color:#1C2833;flex:1;min-width:150px}
+.fld-inp:focus{outline:none;border-color:#1A5276}
+.tbox{background:#E6F1FB;border-radius:10px;padding:.9rem 1.1rem;margin-top:.65rem}
+.tl{font-size:12px;font-weight:600;color:#185FA5}
+.tv{font-size:24px;font-weight:600;color:#0C447C}
+.ts{font-size:11px;color:#185FA5;margin-top:2px}
+.export-btns{display:flex;gap:10px;margin-top:.75rem;flex-wrap:wrap}
+.btn-word{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;font-size:13px;font-weight:500;border:1px solid #D5D8DC;border-radius:8px;cursor:pointer;background:#F4F6F8;color:#1C2833;flex:1}
+.btn-word:hover{background:#EBF5FB;border-color:#1A5276}
+.btn-wapp{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;font-size:13px;font-weight:500;border:1px solid #25D366;border-radius:8px;cursor:pointer;background:#E7FAF0;color:#128C5E;flex:1}
+.btn-wapp:hover{background:#D4F5E2}
+.result-panel{border-radius:10px;border:1px solid #E5E8EC;margin-top:.65rem;overflow:hidden;display:none}
+.result-header{display:flex;justify-content:space-between;align-items:center;padding:.5rem .85rem;background:#F4F6F8}
+.result-title{font-size:12px;font-weight:600;color:#1C2833}
+.copy-btn{padding:4px 12px;font-size:11px;border:1px solid #D5D8DC;border-radius:6px;cursor:pointer;background:#fff;color:#555}
+.copy-btn.ok{background:#EAF3DE;color:#27500A;border-color:#27500A}
+.result-body{padding:.75rem .85rem;font-size:12px;line-height:1.7;white-space:pre-wrap;font-family:'Courier New',monospace;background:#fff;color:#1C2833;max-height:300px;overflow-y:auto}
+.wapp-link{display:block;margin:.5rem .85rem .75rem;padding:9px 14px;background:#25D366;color:#fff;border-radius:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border:none;width:calc(100% - 1.7rem)}
+.wapp-link:hover{background:#1EBE5A}
+.nota{font-size:11px;color:#999;margin-top:.3rem;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <div>
+      <div class="app-title">Simple Clima · Presupuestador Rotoplast</div>
+      <div class="app-sub">Climatización evaporativa para eventos — NEA</div>
+    </div>
+    <div style="font-size:11px;opacity:.7">v1.0</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('equipos')">Equipos</button>
+    <button class="tab" onclick="setTab('costos')">Costos <span class="ibadge">interno</span></button>
+    <button class="tab" onclick="setTab('precio')">Precio <span class="ibadge">interno</span></button>
+    <button class="tab" onclick="setTab('escala')">Escala + ajuste <span class="ibadge">interno</span></button>
+    <button class="tab ptab" onclick="setTab('presupuesto')">Presupuesto</button>
+  </div>
+
+  <!-- EQUIPOS -->
+  <div id="tab-equipos">
+    <div class="st">Flota disponible</div>
+    <div class="card" style="overflow-x:auto">
+      <table class="mt"><thead><tr><th>Modelo</th><th>m³/h</th><th>USD</th><th>Tipo</th><th>Log. extra $</th><th></th></tr></thead>
+      <tbody id="mtbody"></tbody></table>
+      <button class="addbtn" onclick="addModel()">+ Agregar equipo</button>
+    </div>
+    <div class="nota">"Logística extra": costo adicional por evento para equipos de difícil traslado (ej. Roto 140).</div>
+  </div>
+
+  <!-- COSTOS -->
+  <div id="tab-costos" style="display:none">
+    <div class="st">Tipo de cambio</div>
+    <div class="card">
+      <div class="tc-row">
+        <span class="tc-lbl">Tipo de cambio ($/USD)</span>
+        <input type="number" class="tc-inp" id="tc" value="1150" oninput="recalc()">
+        <button class="bna-btn" onclick="fetchBNA()">🏦 Traer BNA</button>
+        <span class="bna-status" id="bna-status"></span>
+      </div>
+      <div class="nota" id="bna-nota">Cotización dólar billete venta — Banco Nación Argentina</div>
+    </div>
+    <div class="st">Parámetros del equipo</div>
+    <div class="card">
+      <div class="ir"><span class="il">Vida útil estimada</span><input type="number" class="in" id="vida" value="5" min="1" max="20" oninput="recalc()"><span class="iu">años</span></div>
+      <div class="ir"><span class="il">Eventos por temporada</span><input type="number" class="in" id="ev" value="30" min="1" max="200" oninput="recalc()"><span class="iu">eventos</span></div>
+      <div class="ir"><span class="il">Mantenimiento anual</span><input type="number" class="in" id="mnt" value="5" min="0" max="30" oninput="recalc()"><span class="iu">%</span></div>
+    </div>
+    <div class="st">Costos operativos por evento (1 equipo)</div>
+    <div class="card">
+      <div class="ir"><span class="il">Flete / traslado</span><input type="number" class="in" id="flete" value="15000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+      <div class="ir"><span class="il">Mano de obra</span><input type="number" class="in" id="mano" value="12000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+      <div class="ir"><span class="il">Insumos / consumibles</span><input type="number" class="in" id="insumos" value="2000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+    </div>
+    <div class="nota" style="margin-bottom:.5rem">Valores sugeridos basados en el análisis de costos de Simple Clima. Ajustá según tus costos reales.</div>
+    <div class="st">Costo calculado por modelo</div>
+    <div class="mg" id="costos-modelos"></div>
+  </div>
+
+  <!-- PRECIO -->
+  <div id="tab-precio" style="display:none">
+    <div class="st">Seleccioná el equipo</div>
+    <div class="msel" id="msel-precio"></div>
+    <div class="st">Modo de cálculo</div>
+    <div class="tgl">
+      <button class="tglb on" id="bmg" onclick="setModo('margen')">Pongo margen → precio</button>
+      <button class="tglb" id="bpr" onclick="setModo('precio')">Pongo precio → margen</button>
+    </div>
+    <div class="card" id="panel-mg">
+      <div class="ir"><span class="il">Margen deseado</span><input type="number" class="in" id="margen" value="60" min="1" max="500" oninput="recalc()"><span class="iu">%</span></div>
+    </div>
+    <div class="card" id="panel-pr" style="display:none">
+      <div class="ir"><span class="il">Precio manual por equipo / día</span><input type="number" class="in" id="prm" value="80000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+    </div>
+    <div class="card" id="precio-card"></div>
+  </div>
+
+  <!-- ESCALA -->
+  <div id="tab-escala" style="display:none">
+    <div class="st">Seleccioná el equipo</div>
+    <div class="msel" id="msel-escala"></div>
+    <div class="st">Escala de descuentos <button class="reset-btn" onclick="resetEscala()">Restaurar recomendados</button></div>
+    <div class="card">
+      <table class="etbl-ed"><thead><tr><th>Tramo</th><th>Desde</th><th>Hasta</th><th>Desc. %</th><th></th></tr></thead>
+      <tbody id="escala-tbody"></tbody></table>
+      <button class="addbtn" onclick="addEscalaRow()">+ Agregar tramo</button>
+    </div>
+    <div class="st">Tabla resultante</div>
+    <div class="card"><table class="etbl" id="etbl"></table></div>
+    <div class="st">Ajuste por caso especial</div>
+    <div class="abox"><div class="abox-t">Valor publicitario de la ubicación</div><div class="abox-s">Feria, exposición o evento estratégico: aplicá un descuento adicional que refleje el beneficio comercial para Simple Clima.</div></div>
+    <div class="card">
+      <div class="ir"><span class="il">Días del evento</span><input type="number" class="in" id="aj_dias" value="1" min="1" max="30" oninput="recalc()"><span class="iu">días</span></div>
+      <div class="ir"><span class="il">Cantidad de equipos</span><input type="number" class="in" id="aj_qty" value="1" min="1" max="10" oninput="recalc()"><span class="iu">equipos</span></div>
+      <div class="ir"><span class="il">Descuento adicional</span><input type="number" class="in" id="aj_extra" value="0" min="0" max="20" oninput="recalc()"><span class="iu">%</span></div>
+      <div class="ir"><span class="il">Motivo</span>
+        <select id="aj_motivo" onchange="recalc()" style="flex:1;padding:5px 8px;font-size:12px;border:1px solid #D5D8DC;border-radius:6px;background:#fff;color:#1C2833">
+          <option value="">— Sin motivo especial</option>
+          <option value="feria">Feria / exposición con visibilidad</option>
+          <option value="cliente">Cliente frecuente o estratégico</option>
+          <option value="volumen">Volumen de equipos</option>
+          <option value="prueba">Primera vez / prueba de servicio</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div id="aj-resultado"></div>
+    </div>
+    <div class="nota" id="aj-nota"></div>
+  </div>
+
+  <!-- PRESUPUESTO -->
+  <div id="tab-presupuesto" style="display:none">
+    <div class="ph"><div class="ph-n">Simple Clima — Alquiler Rotoplast</div><div class="ph-s">Completá los datos y generá el resumen para Word o WhatsApp</div></div>
+    <div class="st">Datos del cliente y evento</div>
+    <div class="card">
+      <div class="fld-row"><span class="fld-lbl">Cliente / empresa</span><input type="text" class="fld-inp" id="f_cliente" placeholder="Nombre o razón social" oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">Tipo de evento</span><input type="text" class="fld-inp" id="f_evento" placeholder="Casamiento, exposición, feria..." oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">Lugar / salón</span><input type="text" class="fld-inp" id="f_lugar" placeholder="Dirección o nombre del salón" oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">Fecha del evento</span><input type="text" class="fld-inp" id="f_fecha" placeholder="dd/mm/aaaa" oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">Horario de uso</span><input type="text" class="fld-inp" id="f_horario" placeholder="Ej: 20:00 a 03:00 hs" oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">N.° presupuesto</span><input type="text" class="fld-inp" id="f_nro" placeholder="Ej: 2025-001" oninput="renderPI()"></div>
+      <div class="fld-row"><span class="fld-lbl">Observaciones</span><input type="text" class="fld-inp" id="f_obs" placeholder="Notas adicionales (opcional)" oninput="renderPI()"></div>
+    </div>
+    <div class="st">Items de la cotización</div>
+    <div class="card">
+      <table class="pitbl"><thead><tr><th>Equipo</th><th>Días</th><th>Cant.</th><th>Ajuste %</th><th>Precio/día</th><th>Subtotal</th><th></th></tr></thead>
+      <tbody id="pitbody"></tbody></table>
+      <button class="addbtn" onclick="addPI()">+ Agregar línea</button>
+    </div>
+    <div id="ptotal"></div>
+    <div class="export-btns">
+      <button class="btn-word" onclick="generarWord()">📋 Copiar para Word</button>
+      <button class="btn-wapp" onclick="generarWapp()">💬 Enviar por WhatsApp</button>
+    </div>
+    <div class="result-panel" id="panel-word">
+      <div class="result-header"><span class="result-title">Texto para pegar en el Word</span><button class="copy-btn" id="copy-word-btn" onclick="copiarTexto('word')">Copiar</button></div>
+      <div class="result-body" id="texto-word"></div>
+    </div>
+    <div class="result-panel" id="panel-wapp">
+      <div class="result-header"><span class="result-title">Vista previa WhatsApp</span><button class="copy-btn" id="copy-wapp-btn" onclick="copiarTexto('wapp')">Copiar texto</button></div>
+      <div class="result-body" id="texto-wapp"></div>
+      <button class="wapp-link" onclick="abrirWapp()">Abrir en WhatsApp →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODELS=[
+  {n:'Roto 55',m3h:30000,usd:2500,tipo:'portátil',lx:0},
+  {n:'Roto 58',m3h:26000,usd:2300,tipo:'portátil',lx:0},
+  {n:'Roto 52',m3h:16000,usd:1164,tipo:'portátil',lx:0},
+  {n:'Roto 46',m3h:7000,usd:555,tipo:'portátil',lx:0},
+  {n:'Roto 140',m3h:45000,usd:3659,tipo:'fijo/portátil',lx:15000},
+];
+const ESCALA_DEF=[
+  {label:'1–2 días',desde:1,hasta:2,desc:0},
+  {label:'3–4 días',desde:3,hasta:4,desc:10},
+  {label:'5–9 días',desde:5,hasta:9,desc:20},
+  {label:'10–14 días',desde:10,hasta:14,desc:30},
+  {label:'15+ días',desde:15,hasta:99,desc:38},
+];
+let ESCALA=JSON.parse(JSON.stringify(ESCALA_DEF));
+let tab='equipos',modo='margen',selP=0,selE=0;
+let PI=[{mi:0,dias:1,qty:1,adj:0}];
+
+function gv(id){return +(document.getElementById(id)||{value:0}).value||0;}
+function fld(id){return((document.getElementById(id)||{}).value||'').trim();}
+function fmt(n){return'$'+Math.round(n).toLocaleString('es-AR');}
+function fU(n){return'USD '+Number(n).toLocaleString('es-AR');}
+function pct(n){return Math.round(n)+'%';}
+function bcl(m){return m>=40?'bg':m>=20?'ba':'br';}
+function hcl(m){return m>=40?'hlg':m>=20?'hla':'hlr';}
+function lcl(m){return m>=40?'lg':m>=20?'la':'lr';}
+function vcl(m){return m>=40?'vg':m>=20?'va':'vr';}
+function getDescStd(d){for(const e of ESCALA){if(d>=e.desde&&d<=e.hasta)return e.desc;}return 0;}
+function resetEscala(){ESCALA=JSON.parse(JSON.stringify(ESCALA_DEF));renderEscalaEditor();recalc();}
+function addEscalaRow(){ESCALA.push({label:'Nuevo tramo',desde:0,hasta:0,desc:0});renderEscalaEditor();recalc();}
+
+function getCosto(i){const m=MODELS[i],tc=gv('tc'),vida=gv('vida')||5,ev=gv('ev')||30,mnt=gv('mnt');const ars=m.usd*tc;return(ars/vida)/ev+(ars*mnt/100)/ev+gv('flete')+gv('mano')+gv('insumos')+(m.lx||0);}
+function getPrecioBase(i){const c=getCosto(i);return modo==='margen'?c*(1+gv('margen')/100):gv('prm');}
+function getPrecioFinal(i,dias,adj){const p=getPrecioBase(i);return p*(1-Math.min(getDescStd(dias)+adj,60)/100);}
+
+async function fetchBNA(){
+  const st=document.getElementById('bna-status'),nota=document.getElementById('bna-nota');
+  st.className='bna-status bna-loading';st.textContent='Consultando...';
+  try{
+    const res=await fetch('https://dolarapi.com/v1/dolares/oficial');
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    const venta=data.venta;if(!venta)throw new Error();
+    document.getElementById('tc').value=Math.round(venta);
+    st.className='bna-status bna-ok';st.textContent=`✓ $${venta} (venta oficial)`;
+    nota.textContent=`Cotización dólar oficial venta — actualizada ${new Date().toLocaleTimeString('es-AR')}`;
+    recalc();
+  }catch(e){st.className='bna-status bna-err';st.textContent='No se pudo obtener. Ingresá manualmente.';}
+}
+
+function setTab(t){
+  tab=t;
+  ['equipos','costos','precio','escala','presupuesto'].forEach((id,i)=>{
+    document.getElementById('tab-'+id).style.display=id===t?'block':'none';
+    const b=document.querySelectorAll('.tab')[i];
+    b.className='tab'+(b.classList.contains('ptab')?' ptab':'')+(id===t?' active':'');
+  });
+  if(t==='escala')renderEscalaEditor();
+  recalc();
+}
+function setModo(m){
+  modo=m;
+  document.getElementById('panel-mg').style.display=m==='margen'?'block':'none';
+  document.getElementById('panel-pr').style.display=m==='precio'?'block':'none';
+  ['bmg','bpr'].forEach((id,i)=>{document.getElementById(id).className='tglb'+(m===(i===0?'margen':'precio')?' on':'');});
+  recalc();
+}
+
+function renderMT(){
+  document.getElementById('mtbody').innerHTML=MODELS.map((m,i)=>`<tr>
+    <td><input type="text" value="${m.n}" oninput="MODELS[${i}].n=this.value;recalc()"></td>
+    <td><input type="number" value="${m.m3h}" style="width:75px" oninput="MODELS[${i}].m3h=+this.value;recalc()"></td>
+    <td><input type="number" value="${m.usd}" style="width:68px" oninput="MODELS[${i}].usd=+this.value;recalc()"></td>
+    <td><select onchange="MODELS[${i}].tipo=this.value;recalc()"><option ${m.tipo==='portátil'?'selected':''}>portátil</option><option ${m.tipo==='fijo/portátil'?'selected':''}>fijo/portátil</option></select></td>
+    <td><input type="number" value="${m.lx}" style="width:78px" oninput="MODELS[${i}].lx=+this.value;recalc()"></td>
+    <td>${MODELS.length>1?`<button class="delbtn" onclick="MODELS.splice(${i},1);if(selP>=MODELS.length)selP=0;if(selE>=MODELS.length)selE=0;recalc()">✕</button>`:''}</td>
+  </tr>`).join('');
+}
+function addModel(){MODELS.push({n:'Nuevo equipo',m3h:0,usd:0,tipo:'portátil',lx:0});renderMT();recalc();}
+function renderSel(id,sel,vn){const el=document.getElementById(id);if(!el)return;el.innerHTML=MODELS.map((m,i)=>`<button class="mpill${i===sel?' active':''}" onclick="${vn}=${i};recalc()">${m.n}</button>`).join('');}
+
+function renderEscalaEditor(){
+  const tb=document.getElementById('escala-tbody');if(!tb)return;
+  tb.innerHTML=ESCALA.map((e,i)=>`<tr>
+    <td><input type="text" value="${e.label}" oninput="ESCALA[${i}].label=this.value;recalc()"></td>
+    <td><input type="number" min="0" max="99" value="${e.desde}" oninput="ESCALA[${i}].desde=+this.value;recalc()"></td>
+    <td><input type="number" min="0" max="99" value="${e.hasta}" oninput="ESCALA[${i}].hasta=+this.value;recalc()"></td>
+    <td><input type="number" min="0" max="80" value="${e.desc}" oninput="ESCALA[${i}].desc=+this.value;recalc()"></td>
+    <td>${ESCALA.length>1?`<button class="delbtn" onclick="ESCALA.splice(${i},1);renderEscalaEditor();recalc()">✕</button>`:''}</td>
+  </tr>`).join('');
+}
+
+function renderEscalaTabla(){
+  const c=getCosto(selE),p=getPrecioBase(selE);
+  const dias=[1,2,3,4,5,6,7,8,10,12,15,20];
+  document.getElementById('etbl').innerHTML=`<thead><tr><th>Días</th><th>Desc.</th><th>Precio/día</th><th>Total equipo</th><th>Margen</th></tr></thead><tbody>`+
+    dias.map(d=>{const ds=getDescStd(d),pd=p*(1-ds/100),tot=pd*d,mr=c>0?(pd-c)/c*100:0;const tramo=ESCALA.find(e=>d>=e.desde&&d<=e.hasta),kr=tramo&&d===tramo.desde;
+      return`<tr class="${kr?'kr':''}"><td>${d}d</td><td>${ds>0?`-${ds}%`:'—'}</td><td>${fmt(pd)}</td><td>${fmt(tot)}</td><td><span class="badge ${bcl(mr)}">${pct(mr)}</span></td></tr>`;
+    }).join('')+`</tbody>`;
+}
+
+function renderAjuste(){
+  const c=getCosto(selE),p=getPrecioBase(selE);
+  const dias=gv('aj_dias')||1,qty=gv('aj_qty')||1,extra=gv('aj_extra')||0;
+  const dstd=getDescStd(dias),dtot=Math.min(dstd+extra,60);
+  const pd_adj=p*(1-dtot/100),tot_adj=pd_adj*dias*qty,tot_std=p*(1-dstd/100)*dias*qty;
+  const mr_adj=c>0?(pd_adj-c)/c*100:0,ok=mr_adj>=25;
+  const motivos={feria:'Feria / exposición',cliente:'Cliente estratégico',volumen:'Volumen',prueba:'Primera vez',otro:'Ajuste especial'};
+  const motivo=(document.getElementById('aj_motivo')||{}).value||'';
+  let h=`<hr class="divider"><div class="row"><span class="rl">Días · equipos</span><span class="rv">${dias}d · ${qty} equipo${qty>1?'s':''}</span></div><div class="row"><span class="rl">Desc. escala</span><span class="rv">-${dstd}%</span></div>`;
+  if(extra>0)h+=`<div class="row"><span class="rl">Ajuste${motivo&&motivos[motivo]?' ('+motivos[motivo]+')':''}</span><span class="rv">-${extra}% <span class="tage">especial</span></span></div>`;
+  h+=`<div class="hl ${hcl(mr_adj)}" style="margin-top:.4rem"><div class="hll ${lcl(mr_adj)}">${extra>0?'Precio con ajuste':'Precio estándar'} — ${qty} equipo${qty>1?'s':''} · ${dias}d</div><div class="hlv ${vcl(mr_adj)}">${fmt(tot_adj)}</div><div style="font-size:11px;color:${ok?'#3B6D11':'#854F0B'};margin-top:2px">Precio/día: ${fmt(pd_adj)} · Margen: ${pct(mr_adj)}${extra>0?' · Ahorro cliente: '+fmt(tot_std-tot_adj):''}</div></div>`;
+  const aj=document.getElementById('aj-resultado');if(aj)aj.innerHTML=h;
+  const piso=c*1.25,nota=document.getElementById('aj-nota');
+  if(nota){if(pd_adj<piso){nota.innerHTML=`⚠️ Precio (${fmt(pd_adj)}/día) por debajo del piso recomendado (${fmt(piso)}/día, margen 25%).`;nota.style.color='#854F0B';}else{nota.innerHTML=`Piso de rentabilidad (25%): ${fmt(piso)}/día para ${MODELS[selE].n}. Precio saludable.`;nota.style.color='#999';}}
+}
+
+function addPI(){PI.push({mi:0,dias:1,qty:1,adj:0});renderPI();}
+function renderPI(){
+  const tbody=document.getElementById('pitbody');if(!tbody)return;
+  tbody.innerHTML=PI.map((item,idx)=>{
+    const pf=getPrecioFinal(item.mi,item.dias,item.adj),sub=pf*item.dias*item.qty;
+    const dtot=Math.min(getDescStd(item.dias)+item.adj,60);
+    const opts=MODELS.map((m,i)=>`<option value="${i}"${i===item.mi?' selected':''}>${m.n}</option>`).join('');
+    return`<tr>
+      <td><select onchange="PI[${idx}].mi=+this.value;renderPI()" style="font-size:11px;padding:3px;border:1px solid #D5D8DC;border-radius:5px;background:#fff">${opts}</select></td>
+      <td><input type="number" min="1" max="30" value="${item.dias}" oninput="PI[${idx}].dias=+this.value;renderPI()"></td>
+      <td><input type="number" min="1" max="10" value="${item.qty}" oninput="PI[${idx}].qty=+this.value;renderPI()"></td>
+      <td><input type="number" min="0" max="20" value="${item.adj}" oninput="PI[${idx}].adj=+this.value;renderPI()">%</td>
+      <td>${fmt(pf)}${dtot>0?` <span class="tagd">-${dtot}%</span>`:''}</td>
+      <td style="font-weight:600">${fmt(sub)}</td>
+      <td><button class="delbtn" onclick="PI.splice(${idx},1);renderPI()">✕</button></td>
+    </tr>`;
+  }).join('');
+  const tot=document.getElementById('ptotal');if(!tot)return;
+  if(!PI.length){tot.innerHTML='';return;}
+  let totalC=0,totalG=0;
+  PI.forEach(item=>{const pf=getPrecioFinal(item.mi,item.dias,item.adj),c=getCosto(item.mi);totalC+=pf*item.dias*item.qty;totalG+=(pf-c)*item.dias*item.qty;});
+  tot.innerHTML=`<div class="tbox"><div class="tl">Total del presupuesto</div><div class="tv">${fmt(totalC)}</div><div class="ts">Ganancia estimada: ${fmt(totalG)}</div></div>`;
+}
+
+function getDatos(){
+  let totalC=0;
+  const items=PI.map(item=>{const pf=getPrecioFinal(item.mi,item.dias,item.adj),sub=pf*item.dias*item.qty,dtot=Math.min(getDescStd(item.dias)+item.adj,60);totalC+=sub;
+    return{modelo:MODELS[item.mi].n,m3h:MODELS[item.mi].m3h,tipo:MODELS[item.mi].tipo,dias:item.dias,qty:item.qty,precio_dia:Math.round(pf),desc:dtot,subtotal:Math.round(sub)};});
+  return{cliente:fld('f_cliente')||'—',evento:fld('f_evento')||'—',lugar:fld('f_lugar')||'—',fecha:fld('f_fecha')||'—',horario:fld('f_horario')||'—',nro:fld('f_nro')||'—',obs:fld('f_obs'),items,total:Math.round(totalC),fecha_emision:new Date().toLocaleDateString('es-AR')};
+}
+
+function generarWord(){
+  const d=getDatos(),linea='─'.repeat(52);
+  let txt=`PRESUPUESTO N.° ${d.nro}  —  Fecha: ${d.fecha_emision}\n${linea}\n\n`;
+  txt+=`Cliente:       ${d.cliente}\nEvento:        ${d.evento}\nLugar:         ${d.lugar}\nFecha evento:  ${d.fecha}\nHorario:       ${d.horario}\n`;
+  if(d.obs)txt+=`Observaciones: ${d.obs}\n`;
+  txt+=`\n${linea}\nEQUIPOS Y SERVICIOS\n${linea}\n\n`;
+  d.items.forEach(item=>{txt+=`• ${item.modelo}  (${item.m3h.toLocaleString('es-AR')} m³/h — ${item.tipo})\n  Cantidad: ${item.qty}   Días: ${item.dias}   Precio/día: ${fmt(item.precio_dia)}`;if(item.desc>0)txt+=`   Descuento: -${item.desc}%`;txt+=`\n  Subtotal: ${fmt(item.subtotal)}\n\n`;});
+  txt+=`${linea}\nTOTAL: ${fmt(d.total)}\n${linea}\n\nValidez: 10 días hábiles.`;
+  document.getElementById('texto-word').textContent=txt;
+  document.getElementById('panel-word').style.display='block';
+  document.getElementById('panel-wapp').style.display='none';
+  document.getElementById('copy-word-btn').className='copy-btn';
+  document.getElementById('copy-word-btn').textContent='Copiar';
+}
+
+function generarWapp(){
+  const d=getDatos();
+  let txt=`🌬️ *PRESUPUESTO SIMPLE CLIMA*\n_Climatizadores Evaporativos Rotoplast_\n━━━━━━━━━━━━━━━━━━━━\n\n`;
+  txt+=`👤 *Cliente:* ${d.cliente}\n🎉 *Evento:* ${d.evento}\n📍 *Lugar:* ${d.lugar}\n📅 *Fecha:* ${d.fecha}\n🕐 *Horario:* ${d.horario}\n`;
+  if(d.obs)txt+=`📝 *Nota:* ${d.obs}\n`;
+  txt+=`\n━━━━━━━━━━━━━━━━━━━━\n*🔧 EQUIPOS*\n\n`;
+  d.items.forEach((item,i)=>{txt+=`*${i+1}. ${item.modelo}*\n   💨 ${item.m3h.toLocaleString('es-AR')} m³/h\n   📦 ${item.qty} equipo${item.qty>1?'s':''}  📆 ${item.dias} día${item.dias>1?'s':''}\n   💲 Precio/día: ${fmt(item.precio_dia)}`;if(item.desc>0)txt+=` _(desc. -${item.desc}%)_`;txt+=`\n   💰 Subtotal: *${fmt(item.subtotal)}*\n\n`;});
+  txt+=`━━━━━━━━━━━━━━━━━━━━\n💵 *TOTAL: ${fmt(d.total)}*\n━━━━━━━━━━━━━━━━━━━━\n\n✅ *Incluye:* traslado, instalación y retiro\n💳 *Pago:* 100% al confirmar · _Validez: 10 días hábiles_\n\n_Ante cualquier consulta, estamos a disposición_ 🙌`;
+  document.getElementById('texto-wapp').textContent=txt;
+  document.getElementById('panel-wapp').style.display='block';
+  document.getElementById('panel-word').style.display='none';
+  document.getElementById('copy-wapp-btn').className='copy-btn';
+  document.getElementById('copy-wapp-btn').textContent='Copiar texto';
+  window._wappText=txt;
+}
+
+function copiarTexto(tipo){
+  const id=tipo==='word'?'texto-word':'texto-wapp',btnId=tipo==='word'?'copy-word-btn':'copy-wapp-btn';
+  const text=document.getElementById(id).textContent;
+  const ok=()=>{const b=document.getElementById(btnId);b.textContent='✓ Copiado';b.className='copy-btn ok';setTimeout(()=>{b.textContent=tipo==='word'?'Copiar':'Copiar texto';b.className='copy-btn';},2000);};
+  navigator.clipboard.writeText(text).then(ok).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);ok();});
+}
+function abrirWapp(){window.open('https://wa.me/?text='+encodeURIComponent(window._wappText||document.getElementById('texto-wapp').textContent),'_blank');}
+
+function recalc(){
+  renderMT();renderSel('msel-precio',selP,'selP');renderSel('msel-escala',selE,'selE');
+  const cpm=document.getElementById('costos-modelos');
+  if(cpm)cpm.innerHTML=MODELS.map((m,i)=>{const c=getCosto(i);return`<div class="mc"><div class="ml">${m.n}</div><div class="mv">${fmt(c)}</div><div style="font-size:10px;color:#999;margin-top:1px">${fU(m.usd)}${m.lx>0?' · log+'+fmt(m.lx):''}</div></div>`;}).join('');
+  const pc=document.getElementById('precio-card');
+  if(pc&&MODELS.length>0){
+    const c=getCosto(selP),p=getPrecioBase(selP),m=MODELS[selP],mr=c>0?(p-c)/c*100:0;
+    const inv=m.usd*gv('tc'),gan=p-c,evR=gan>0?Math.ceil(inv/gan):null,aR=evR?(evR/(gv('ev')||30)).toFixed(1):null;
+    if(modo==='margen'){pc.innerHTML=`<div class="row"><span class="rl">Costo / evento</span><span class="rv">${fmt(c)}</span></div><div class="row"><span class="rl">Margen</span><span class="rv">${pct(gv('margen'))}</span></div><hr class="divider"><div class="hl hlg"><div class="hll lg">Precio sugerido / equipo / día</div><div class="hlv vg">${fmt(p)}</div></div><div class="row" style="margin-top:.4rem"><span class="rl">Ganancia / evento</span><span class="rv">${fmt(gan)}</span></div><div class="row"><span class="rl">Recupero inversión</span><span class="rv">${aR?aR+' años':'—'}</span></div>`;}
+    else{pc.innerHTML=`<div class="row"><span class="rl">Costo / evento</span><span class="rv">${fmt(c)}</span></div><div class="row"><span class="rl">Precio ingresado</span><span class="rv">${fmt(p)}</span></div><hr class="divider"><div class="hl ${hcl(mr)}"><div class="hll ${lcl(mr)}">Margen sobre costo</div><div class="hlv ${vcl(mr)}">${pct(mr)}</div></div><div class="row" style="margin-top:.4rem"><span class="rl">Recupero inversión</span><span class="rv">${aR?aR+' años':'—'}</span></div>`;}
+  }
+  if(tab==='escala'){renderEscalaEditor();renderEscalaTabla();renderAjuste();}
+  renderPI();
+}
+recalc();
+</script>
+</body>
+</html>
