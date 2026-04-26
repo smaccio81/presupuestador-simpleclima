@@ -150,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="card">
       <div class="tc-row">
         <span class="tc-lbl">Tipo de cambio ($/USD)</span>
-        <input type="number" class="tc-inp" id="tc" value="1150" oninput="recalc()">
+        <input type="number" class="tc-inp" id="tc" value="1400" oninput="recalc()">
         <button class="bna-btn" onclick="fetchBNA()">🏦 Traer BNA</button>
         <span class="bna-status" id="bna-status"></span>
       </div>
@@ -159,14 +159,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="st">Parámetros del equipo</div>
     <div class="card">
       <div class="ir"><span class="il">Vida útil estimada</span><input type="number" class="in" id="vida" value="5" min="1" max="20" oninput="recalc()"><span class="iu">años</span></div>
-      <div class="ir"><span class="il">Eventos por temporada</span><input type="number" class="in" id="ev" value="30" min="1" max="200" oninput="recalc()"><span class="iu">eventos</span></div>
+      <div class="ir"><span class="il">Eventos por temporada</span><input type="number" class="in" id="ev" value="10" min="1" max="200" oninput="recalc()"><span class="iu">eventos</span></div>
       <div class="ir"><span class="il">Mantenimiento anual</span><input type="number" class="in" id="mnt" value="5" min="0" max="30" oninput="recalc()"><span class="iu">%</span></div>
     </div>
     <div class="st">Costos operativos por evento (1 equipo)</div>
     <div class="card">
-      <div class="ir"><span class="il">Flete / traslado</span><input type="number" class="in" id="flete" value="15000" min="0" oninput="recalc()"><span class="iu">$</span></div>
-      <div class="ir"><span class="il">Mano de obra</span><input type="number" class="in" id="mano" value="12000" min="0" oninput="recalc()"><span class="iu">$</span></div>
-      <div class="ir"><span class="il">Insumos / consumibles</span><input type="number" class="in" id="insumos" value="2000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+      <div class="ir"><span class="il">Flete / traslado</span><input type="number" class="in" id="flete" value="19000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+      <div class="ir"><span class="il">Mano de obra</span><input type="number" class="in" id="mano" value="40000" min="0" oninput="recalc()"><span class="iu">$</span></div>
+      <div class="ir"><span class="il">Insumos / consumibles</span><input type="number" class="in" id="insumos" value="10000" min="0" oninput="recalc()"><span class="iu">$</span></div>
     </div>
     <div class="nota" style="margin-bottom:.5rem">Valores sugeridos basados en el análisis de costos de Simple Clima. Ajustá según tus costos reales.</div>
     <div class="st">Costo calculado por modelo</div>
